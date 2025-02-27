@@ -5,7 +5,7 @@ provider "aws" {
 
 #terraform {
 #  backend "s3" {
-#    bucket = "terraform-ECS-presnetation"
+#    bucket = "terraform-ecs-presnetation"
 #    key    = "Aws-default-infrastructure"
 #    region = "us-east-2"
 #  }

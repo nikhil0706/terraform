@@ -136,7 +136,7 @@ resource "aws_ecs_cluster" "ecs_cluster" {
 resource "aws_ecs_service" "app_service" {
   name            = "app-service"
   cluster         = aws_ecs_cluster.ecs_cluster.id
-  task_definition = aws_ecs_task_definition.app_task.id
+  #task_definition = aws_ecs_task_definition.app_task.id
   desired_count   = 1
   launch_type     = "FARGATE"
 
@@ -172,7 +172,7 @@ output "ecs_cluster_id" {
   value       = aws_ecs_cluster.ecs_cluster.id
 }
 
-output "task_definition_arn" {
-  description = "The ARN of the ECS Task Definition"
-  value       = aws_ecs_task_definition.app_task.arn
-}
+#output "task_definition_arn" {
+#  description = "The ARN of the ECS Task Definition"
+#  value       = aws_ecs_task_definition.app_task.arn
+#}

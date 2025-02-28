@@ -48,7 +48,7 @@ jobs:
           terraform_version: 1.5.6
 
       - name: Terraform Init
-        run: terraform init -reconfigure
+        run: terraform init
         working-directory: environments/${{github.event.inputs.environment}}
          
       - name: Terraform validate
@@ -61,7 +61,6 @@ jobs:
 
       - name: Terraform Apply
         if: github.event_name == 'push'
-        run: terraform destroy -auto-approve
+        run: terraform apply -auto-approve
         working-directory: environments/${{github.event.inputs.environment}}
-        #run: terraform destroy
         

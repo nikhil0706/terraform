@@ -130,16 +130,7 @@ resource "aws_ecs_service" "app_service" {
     assign_public_ip = true
   }
 }
-get output values which i can use in github actions to deploy the containers from the above 
 
-avatar
-To utilize the outputs from your Terraform configuration for deploying containers via GitHub Actions, you'll want to retrieve values such as the Application Load Balancer (ALB) DNS name, VPC ID, Subnet IDs, and Security Group IDs. Below are the output values you can add to your main.tf file, along with an explanation of their significance for your GitHub Actions workflow.
-
-Output Values in main.tf
-You can add the following output block at the end of your main.tf file:
-
-hcl
-Copy
 output "load_balancer_url" {
   description = "The URL of the Application Load Balancer"
   value       = aws_lb.app_lb.dns_name

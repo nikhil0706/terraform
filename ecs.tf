@@ -40,27 +40,41 @@ resource "aws_route_table_association" "ecs_route_assc" {
 
 
 
-resource "aws_security_group" "ecs_secgrp" {
+#resource "aws_security_group" "ecs_secgrp" {
 
-  name        = "ecs_secgrp"
-  description = "Allow TLS inbound traffic and all outbound traffic"
-  vpc_id      = aws_vpc.main.id
-  tags = {
-    Name = "ecs_secgrp"
+#  name        = "ecs_secgrp"
+#  description = "Allow TLS inbound traffic and all outbound traffic"
+#  vpc_id      = aws_vpc.main.id
+#  tags = {
+#   Name = "ecs_secgrp"
+#  }
+#}
+#Below is the one neededsec group
+#resource "aws_security_group" "ecs_secgrp" {
+  name   = "ecs_secgrp"
+   description = "Allow TLS inbound traffic and all outbound traffic"
+  vpc_id = aws_vpc.main.id
+
+  ingress {
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks  = ["0.0.0.0/0"]
   }
 }
 
-resource "aws_vpc_security_group_ingress_rule" "ecs_allow_tls_ipv4" {
-  security_group_id = aws_security_group.ecs_secgrp.id
-  cidr_ipv4         = "0.0.0.0/0"
-  ip_protocol       = -1
-}
+#removefrom 54to64
+#resource "aws_vpc_security_group_ingress_rule" "ecs_allow_tls_ipv4" {
+#  security_group_id = aws_security_group.ecs_secgrp.id
+#  cidr_ipv4         = "0.0.0.0/0"
+#  ip_protocol       = -1
+#}
 
-resource "aws_vpc_security_group_egress_rule" "ecs_allow_all_traffic_ipv4" {
-  security_group_id = aws_security_group.ecs_secgrp.id
-  cidr_ipv4         = "0.0.0.0/0"
-  ip_protocol       = "-1" # semantically equivalent to all ports
-}
+#resource "aws_vpc_security_group_egress_rule" "ecs_allow_all_traffic_ipv4" {
+#  security_group_id = aws_security_group.ecs_secgrp.id
+#  cidr_ipv4         = "0.0.0.0/0"
+#  ip_protocol       = "-1" # semantically equivalent to all ports
+#}
 
 
 ##############

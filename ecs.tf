@@ -185,7 +185,7 @@ resource "aws_ecs_service" "app_service" {
 
   network_configuration {
     subnets          = [aws_subnet.ecs_subnet_1.id]
-    security_groups  = [aws_security_group.ecs_sg.id]
+    security_groups  = [aws_security_group.ecs_secgrp.id]
     assign_public_ip = true
   }
 }
@@ -207,7 +207,7 @@ output "subnet_ids" {
 
 output "security_group_id" {
   description = "The ID of the security group"
-  value       = aws_security_group.ecs_sg.id
+  value       = aws_security_group.ecs_secgrp.id
 }
 
 output "ecs_cluster_id" {

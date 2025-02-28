@@ -123,7 +123,7 @@ resource "aws_ecs_service" "app_service" {
   launch_type     = "FARGATE"
 
   network_configuration {
-    subnets          = [aws_subnet.subnet_a.id, aws_subnet.subnet_b.id]
+    subnets          = [aws_subnet.public_1.id, aws_subnet.public_2.id]
     security_groups  = [aws_security_group.ecs_sg.id]
     assign_public_ip = true
   }
@@ -141,7 +141,7 @@ output "vpc_id" {
 
 output "subnet_ids" {
   description = "The IDs of the created subnets"
-  value       = [aws_subnet.subnet_a.id, aws_subnet.subnet_b.id]
+  value       = [aws_subnet.public_1.id, aws_subnet.public_2.id]
 }
 
 output "security_group_id" {

@@ -49,19 +49,19 @@ jobs:
 
       - name: Terraform Init
         run: terraform init -reconfigure
-        working-directory: environments/${{ github.event.inputs.environment || 'dev' }}
+        working-directory: environments/${ github.event.inputs.environment }
          
       - name: Terraform validate
         run: terraform validate
-        working-directory: environments/${{ github.event.inputs.environment || 'dev' }}
+        working-directory: environments/${ github.event.inputs.environment }
 
       - name: Terraform Plan
         run: terraform plan
-        working-directory: environments/${{ github.event.inputs.environment || 'dev' }}
+        working-directory: environments/${ github.event.inputs.environment }
 
       - name: Terraform Apply
         if: github.event_name == 'push'
         run: terraform destroy -auto-approve
-        working-directory: environments/${{ github.event.inputs.environment || 'dev' }}
+        working-directory: environments/${ github.event.inputs.environment }
         #run: terraform destroy
         

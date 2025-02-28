@@ -109,34 +109,34 @@ resource "aws_ecs_cluster" "ecs_cluster" {
 }
 
 # ECS Task Definition
-#resource "aws_ecs_task_definition" "app_task" {
-#  family                   = "my-task"
-#  network_mode             = "awsvpc"
-#  requires_compatibilities  = ["FARGATE"]
-#  cpu                      = "256"
-#  memory                   = "512"
+resource "aws_ecs_task_definition" "app_task" {
+  family                   = "my-task"
+  network_mode             = "awsvpc"
+  requires_compatibilities  = ["FARGATE"]
+  cpu                      = "256"
+  memory                   = "512"
 
-#  execution_role_arn = aws_iam_role.ecs_task_execution_role.arn
+  execution_role_arn = aws_iam_role.ecs_task_execution_role.arn
 
-#  container_definitions = jsonencode([{
-#    name      = "my-app"
-#    image     = "nginx:latest" # Replace with your container image
-#    essential = true
-#    portMappings = [
-#      {
-#        containerPort = 80
-#        hostPort      = 80
-#        protocol      = "tcp"
-#      },
- #   ]
- # }])
-#}
+  container_definitions = jsonencode([{
+    name      = "my-app"
+    image     = "nginx:latest" # Replace with your container image
+    essential = true
+    portMappings = [
+      {
+        containerPort = 80
+        hostPort      = 80
+        protocol      = "tcp"
+      },
+    ]
+  }])
+}
 
 # ECS Service
 resource "aws_ecs_service" "app_service" {
   name            = "app-service"
   cluster         = aws_ecs_cluster.ecs_cluster.id
-  #task_definition = aws_ecs_task_definition.app_task.id
+  task_definition = aws_ecs_task_definition.app_task.id
   desired_count   = 1
   launch_type     = "FARGATE"
 
@@ -172,7 +172,7 @@ output "ecs_cluster_id" {
   value       = aws_ecs_cluster.ecs_cluster.id
 }
 
-#output "task_definition_arn" {
-#  description = "The ARN of the ECS Task Definition"
-#  value       = aws_ecs_task_definition.app_task.arn
-#}
+output "task_definition_arn" {
+  description = "The ARN of the ECS Task Definition"
+  value       = aws_ecs_task_definition.app_task.arn
+}

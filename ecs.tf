@@ -130,7 +130,7 @@ resource "aws_ecs_cluster" "ecs_cluster" {
 #      },
  #   ]
  # }])
-}
+#}
 
 # ECS Service
 resource "aws_ecs_service" "app_service" {

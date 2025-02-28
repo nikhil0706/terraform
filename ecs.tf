@@ -50,7 +50,7 @@ resource "aws_route_table_association" "ecs_route_assc" {
 #  }
 #}
 #Below is the one neededsec group
-#resource "aws_security_group" "ecs_secgrp" {
+resource "aws_security_group" "ecs_secgrp" {
   name   = "ecs_secgrp"
    description = "Allow TLS inbound traffic and all outbound traffic"
   vpc_id = aws_vpc.main.id

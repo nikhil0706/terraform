@@ -70,35 +70,6 @@ resource "aws_security_group" "ecs_secgrp" {
   }
 }
 
-#removefrom 54to64
-#resource "aws_vpc_security_group_ingress_rule" "ecs_allow_tls_ipv4" {
-#  security_group_id = aws_security_group.ecs_secgrp.id
-#  cidr_ipv4         = "0.0.0.0/0"
-#  ip_protocol       = -1
-#}
-
-#resource "aws_vpc_security_group_egress_rule" "ecs_allow_all_traffic_ipv4" {
-#  security_group_id = aws_security_group.ecs_secgrp.id
-#  cidr_ipv4         = "0.0.0.0/0"
-#  ip_protocol       = "-1" # semantically equivalent to all ports
-#}
-
-
-##############
-
-# Create Security Group
-#resource "aws_security_group" "ecs_sg" {
-#  name   = "ecs_security_group"
-#  vpc_id = aws_vpc.main.id
-
-#  ingress {
-#    from_port   = 80
-#    to_port     = 80
-#    protocol    = "tcp"
-#    cidr_blocks  = ["0.0.0.0/0"]
-#  }
-#}
-
 # Create ALB
 resource "aws_lb" "app_lb" {
   name               = "app-lb"
@@ -168,18 +139,18 @@ resource "aws_ecs_task_definition" "app_task" {
 
   execution_role_arn = aws_iam_role.ecs_task_execution_role.arn
 
-  container_definitions = jsonencode([{
-    name      = "my-app"
-    image     = "nginx:latest" # Replace with your container image
-    essential = true
-    portMappings = [
-      {
-        containerPort = 80
-        hostPort      = 80
-        protocol      = "tcp"
-      },
-    ]
-  }])
+#  container_definitions = jsonencode([{
+#    name      = "my-app"
+#    image     = "nginx:latest" # Replace with your container image
+#    essential = true
+#    portMappings = [
+#      {
+#        containerPort = 80
+#        hostPort      = 80
+#        protocol      = "tcp"
+#      },
+ #   ]
+ # }])
 }
 
 # ECS Service

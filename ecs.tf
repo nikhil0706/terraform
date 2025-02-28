@@ -6,7 +6,7 @@ resource "aws_vpc" "main" {
 # Create Public Subnets
 resource "aws_subnet" "ecs_subnet_1" {
   vpc_id     = aws_vpc.main.id
-  cidr_block = "0.0.0.0/0"
+  cidr_block = "10.0.1.0/24"
   #availability_zone = "us-east-2"
   map_public_ip_on_launch = true
 }
@@ -29,7 +29,7 @@ resource "aws_route_table" "ecs_routetable" {
 
 resource "aws_route" "ecs_route" {
   route_table_id         = aws_route_table.ecs_routetable.id
-  destination_cidr_block = "0.0.0.0/0"
+  destination_cidr_block = "10.0.0.0/16"
   gateway_id             = aws_internet_gateway.ecs_igw.id
 }
 
@@ -59,7 +59,7 @@ resource "aws_security_group" "ecs_secgrp" {
     from_port   = 80
     to_port     = 80
     protocol    = "tcp"
-    cidr_blocks  = ["0.0.0.0/0"]
+    cidr_blocks  = ["10.0.0.0/16"]
   }
 }
 

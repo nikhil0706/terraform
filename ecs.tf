@@ -34,28 +34,7 @@ resource "aws_route_table" "ecs_routetable" {
   }
 }
 
-#resource "aws_route" "ecs_route" {
-#  route_table_id         = aws_route_table.ecs_routetable.id
-#  destination_cidr_block = "10.0.0.0/16"
-#  gateway_id             = aws_internet_gateway.ecs_igw.id
-#}
 
-#resource "aws_route_table_association" "ecs_route_assc" {
-#  subnet_id      = aws_subnet.ecs_subnet_1.id
-#  route_table_id = aws_route_table.ecs_routetable.id
-#}
-
-
-
-#resource "aws_security_group" "ecs_secgrp" {
-
-#  name        = "ecs_secgrp"
-#  description = "Allow TLS inbound traffic and all outbound traffic"
-#  vpc_id      = aws_vpc.main.id
-#  tags = {
-#   Name = "ecs_secgrp"
-#  }
-#}
 #Below is the one neededsec group
 resource "aws_security_group" "ecs_secgrp" {
   name   = "ecs_secgrp"
@@ -130,14 +109,14 @@ resource "aws_ecs_cluster" "ecs_cluster" {
 }
 
 # ECS Task Definition
-resource "aws_ecs_task_definition" "app_task" {
-  family                   = "my-task"
-  network_mode             = "awsvpc"
-  requires_compatibilities  = ["FARGATE"]
-  cpu                      = "256"
-  memory                   = "512"
+#resource "aws_ecs_task_definition" "app_task" {
+#  family                   = "my-task"
+#  network_mode             = "awsvpc"
+#  requires_compatibilities  = ["FARGATE"]
+#  cpu                      = "256"
+#  memory                   = "512"
 
-  execution_role_arn = aws_iam_role.ecs_task_execution_role.arn
+#  execution_role_arn = aws_iam_role.ecs_task_execution_role.arn
 
 #  container_definitions = jsonencode([{
 #    name      = "my-app"

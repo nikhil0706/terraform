@@ -7,7 +7,14 @@ resource "aws_vpc" "main" {
 resource "aws_subnet" "ecs_subnet_1" {
   vpc_id     = aws_vpc.main.id
   cidr_block = "10.0.1.0/24"
-  #availability_zone = "us-east-2"
+  availability_zone = "us-east-2a"
+  map_public_ip_on_launch = true
+}
+
+resource "aws_subnet" "ecs_subnet_2" {
+  vpc_id     = aws_vpc.main.id
+  cidr_block = "10.0.1.0/24"
+  availability_zone = "us-east-2b"
   map_public_ip_on_launch = true
 }
 
@@ -27,16 +34,16 @@ resource "aws_route_table" "ecs_routetable" {
   }
 }
 
-resource "aws_route" "ecs_route" {
-  route_table_id         = aws_route_table.ecs_routetable.id
-  destination_cidr_block = "10.0.0.0/16"
-  gateway_id             = aws_internet_gateway.ecs_igw.id
-}
+#resource "aws_route" "ecs_route" {
+#  route_table_id         = aws_route_table.ecs_routetable.id
+#  destination_cidr_block = "10.0.0.0/16"
+#  gateway_id             = aws_internet_gateway.ecs_igw.id
+#}
 
-resource "aws_route_table_association" "ecs_route_assc" {
-  subnet_id      = aws_subnet.ecs_subnet_1.id
-  route_table_id = aws_route_table.ecs_routetable.id
-}
+#resource "aws_route_table_association" "ecs_route_assc" {
+#  subnet_id      = aws_subnet.ecs_subnet_1.id
+#  route_table_id = aws_route_table.ecs_routetable.id
+#}
 
 
 
@@ -98,7 +105,7 @@ resource "aws_lb" "app_lb" {
   internal           = false
   load_balancer_type = "application"
   security_groups    = [aws_security_group.ecs_secgrp.id]
-  subnets            = [aws_subnet.ecs_subnet_1.id]
+  subnets            = [aws_subnet.ecs_subnet_1.id, aws_subnet.ecs_subnet_2.id]
 }
 
 # Target Group
@@ -184,7 +191,7 @@ resource "aws_ecs_service" "app_service" {
   launch_type     = "FARGATE"
 
   network_configuration {
-    subnets          = [aws_subnet.ecs_subnet_1.id]
+    subnets          = [aws_subnet.ecs_subnet_1.id, aws_subnet.ecs_subnet_2.id]
     security_groups  = [aws_security_group.ecs_secgrp.id]
     assign_public_ip = true
   }
@@ -202,7 +209,7 @@ output "vpc_id" {
 
 output "subnet_ids" {
   description = "The IDs of the created subnets"
-  value       = [aws_subnet.ecs_subnet_1.id]
+  value       = [aws_subnet.ecs_subnet_1.id , aws_subnet.ecs_subnet_1.id]
 }
 
 output "security_group_id" {

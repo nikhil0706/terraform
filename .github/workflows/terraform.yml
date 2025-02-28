@@ -4,6 +4,21 @@ on:
   push:
     branches:
       - main
+      
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Target Environment (dev, qa, prod)'
+        required: true
+        type: choice
+        options:
+          - dev
+          - qa
+          - prod
+      approve_apply:
+        description: 'Approve Terraform Apply'
+        required: true
+        type: boolean
 
 permissions:
   contents: read
@@ -46,6 +61,3 @@ jobs:
         run: terraform destroy -auto-approve
         #run: terraform destroy
         
-
-    
-

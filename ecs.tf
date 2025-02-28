@@ -18,25 +18,78 @@ resource "aws_subnet" "public_2" {
   map_public_ip_on_launch = true
 }
 
-# Create Security Group
-resource "aws_security_group" "ecs_sg" {
-  name   = "ecs_security_group"
+###################
+resource "aws_internet_gateway" "ecs_igw" {
   vpc_id = aws_vpc.main.id
-
-  ingress {
-    from_port   = 80
-    to_port     = 80
-    protocol    = "tcp"
-    cidr_blocks  = ["0.0.0.0/0"]
+  tags = {
+    Name = "ecs_igw"
   }
 }
+
+resource "aws_route_table" "ecs_routetable" {
+  vpc_id = aws_vpc.main.id
+  tags = {
+    Name = "ecs_routetable"
+  }
+}
+
+resource "aws_route" "ecs_route" {
+  route_table_id         = aws_route_table.ecs_routetable.id
+  destination_cidr_block = "0.0.0.0/0"
+  gateway_id             = aws_internet_gateway.ecs_igw.id
+}
+
+resource "aws_route_table_association" "ecs_route_assc" {
+  subnet_id      = aws_subnet.terraform_subnet.id
+  route_table_id = aws_route_table.ecs_routetable.id
+}
+
+
+
+resource "aws_security_group" "ecs_secgrp" {
+
+  name        = "ecs_secgrp"
+  description = "Allow TLS inbound traffic and all outbound traffic"
+  vpc_id      = aws_vpc.main.id
+  tags = {
+    Name = "ecs_secgrp"
+  }
+}
+
+resource "aws_vpc_security_group_ingress_rule" "ecs_allow_tls_ipv4" {
+  security_group_id = aws_security_group.ecs_secgrp.id
+  cidr_ipv4         = "0.0.0.0/0"
+  ip_protocol       = -1
+}
+
+resource "aws_vpc_security_group_egress_rule" "ecs_allow_all_traffic_ipv4" {
+  security_group_id = aws_security_group.ecs_secgrp.id
+  cidr_ipv4         = "0.0.0.0/0"
+  ip_protocol       = "-1" # semantically equivalent to all ports
+}
+
+
+##############
+
+# Create Security Group
+#resource "aws_security_group" "ecs_sg" {
+#  name   = "ecs_security_group"
+#  vpc_id = aws_vpc.main.id
+
+#  ingress {
+#    from_port   = 80
+#    to_port     = 80
+#    protocol    = "tcp"
+#    cidr_blocks  = ["0.0.0.0/0"]
+#  }
+#}
 
 # Create ALB
 resource "aws_lb" "app_lb" {
   name               = "app-lb"
   internal           = false
   load_balancer_type = "application"
-  security_groups    = [aws_security_group.ecs_sg.id]
+  security_groups    = [aws_security_group.ecs_secgrp.id]
   subnets            = [aws_subnet.public_1.id, aws_subnet.public_2.id]
 }
 

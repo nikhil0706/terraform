@@ -14,6 +14,11 @@ resource "aws_subnet" "ecs_subnet_1" {
   cidr_block = "10.0.1.0/24"
   availability_zone = "us-east-2a"
   map_public_ip_on_launch = true
+
+  tags = {
+    Name        = "ecs-subnet1"
+    Environment = "dev"
+  }
 }
 
 resource "aws_subnet" "ecs_subnet_2" {
@@ -21,6 +26,11 @@ resource "aws_subnet" "ecs_subnet_2" {
   cidr_block = "10.0.2.0/24"
   availability_zone = "us-east-2b"
   map_public_ip_on_launch = true
+
+  tags = {
+    Name        = "ecs-subnet2"
+    Environment = "dev"
+  }
 }
 
 

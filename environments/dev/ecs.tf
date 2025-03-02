@@ -110,7 +110,7 @@ resource "aws_security_group_rule" "allow_inbound_https" {
 }
 
 resource "aws_vpc_endpoint" "ecr_api" {
-  vpc_id            = [aws_vpc.main.id]
+  vpc_id            = aws_vpc.main.id
   service_name      = "com.amazonaws.${var.aws_region}.ecr.api"
   vpc_endpoint_type = "Interface"
   subnet_ids        = [aws_subnet.ecs_subnet_1.id, aws_subnet.ecs_subnet_2.id]  # Replace with your subnets
@@ -120,7 +120,7 @@ resource "aws_vpc_endpoint" "ecr_api" {
 }
 
 resource "aws_vpc_endpoint" "ecr_dkr" {
-  vpc_id            = [aws_vpc.main.id]
+  vpc_id            = aws_vpc.main.id
   service_name      = "com.amazonaws.${var.aws_region}.ecr.dkr"
   vpc_endpoint_type = "Interface"
   subnet_ids        = [aws_subnet.ecs_subnet_1.id, aws_subnet.ecs_subnet_2.id]  # Replace with your subnets

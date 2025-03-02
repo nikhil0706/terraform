@@ -15,7 +15,7 @@ resource "aws_subnet" "ecs_subnet_1" {
   vpc_id     = aws_vpc.main.id
   cidr_block = "10.0.1.0/24"
   availability_zone = "us-east-2a"
-  map_public_ip_on_launch = true
+  map_public_ip_on_launch = false
 
   tags = {
     Name        = "ecs-subnet1"
@@ -27,7 +27,7 @@ resource "aws_subnet" "ecs_subnet_2" {
   vpc_id     = aws_vpc.main.id
   cidr_block = "10.0.2.0/24"
   availability_zone = "us-east-2b"
-  map_public_ip_on_launch = true
+  map_public_ip_on_launch = false
 
   tags = {
     Name        = "ecs-subnet2"
@@ -36,7 +36,40 @@ resource "aws_subnet" "ecs_subnet_2" {
 }
 
 
-###################
+
+resource "aws_route_table" "private_route_table" {
+  vpc_id = "aws_vpc.main.id"
+
+  route {
+    cidr_block = "0.0.0.0/0"
+    gateway_id = aws_nat_gateway.nat_gw.id       # Route to NAT gateway
+  }
+}
+
+resource "aws_route_table_association" "private_assoc_1" {
+  subnet_id      = aws_subnet.ecs_subnet_1.id
+  route_table_id = aws_route_table.private_route_table.id
+}
+
+resource "aws_route_table_association" "private_assoc_2" {
+  subnet_id      = aws_subnet.ecs_subnet_2.id
+  route_table_id = aws_route_table.private_route_table.id
+}
+
+###########private end 
+
+###################public start
+
+
+resource "aws_subnet" "ecs_pubsubnet" {
+  vpc_id                  = aws_vpc.main.id
+  cidr_block              = "10.0.1.0/24"         # Example CIDR, adjust as needed
+  map_public_ip_on_launch = true                  # Enable public IPs
+  availability_zone       = "us-east-2a"          # Replace with your AZ
+}
+
+
+
 resource "aws_internet_gateway" "ecs_igw" {
   vpc_id = aws_vpc.main.id
   tags = {
@@ -44,25 +77,36 @@ resource "aws_internet_gateway" "ecs_igw" {
   }
 }
 
-resource "aws_route_table" "ecs_routetable" {
-  vpc_id = aws_vpc.main.id
-  tags = {
-    Name = "ecs_routetable"
+resource "aws_route_table" "public_route_table" {
+  vpc_id = "aws_vpc.main.id"
+
+  route {
+    cidr_block = "0.0.0.0/0"
+    gateway_id = aws_internet_gateway.ecs_igw.id
   }
 }
 
+resource "aws_route_table_association" "public_assoc" {
+  subnet_id      = aws_subnet.ecs_pubsubnet.id
+  route_table_id = aws_route_table.public_route_table.id
+}
 
-#Below is the one neededsec group
-#resource "aws_security_group" "ecs_secgrp" {
-#  name   = "ecs_secgrp"
-#   description = "Allow TLS inbound traffic and all outbound traffic"
+resource "aws_eip" "nat_eip" {
+  vpc = true
+}
+
+resource "aws_nat_gateway" "nat_gw" {
+  allocation_id = aws_eip.nat_eip.id
+  subnet_id     = aws_subnet.ecs_pubsubnet.id  # Use the public subnet here
+}
+
+#########public end
+
+
+#resource "aws_route_table" "ecs_routetable" {
 #  vpc_id = aws_vpc.main.id
-
-#  ingress {
-#    from_port   = 80
-#    to_port     = 80
-#    protocol    = "tcp"
-#    cidr_blocks  = ["10.0.0.0/16"]
+#  tags = {
+#    Name = "ecs_routetable"
 #  }
 #}
 
@@ -137,7 +181,7 @@ resource "aws_lb" "app_lb" {
   internal           = false
   load_balancer_type = "application"
   security_groups    = [aws_security_group.ecs_secgrp.id]
-  subnets            = [aws_subnet.ecs_subnet_1.id, aws_subnet.ecs_subnet_2.id]
+  subnets            = aws_subnet.ecs_pubsubnet.id
 }
 
 # Target Group
@@ -267,6 +311,65 @@ output "ecr_image_url" {
   value       = "${data.aws_ecr_repository.app_repo.repository_url}:latest"
 }
 
+##########################
+
+resource "aws_eip" "nat_eip" {
+  vpc = true
+}
+
+resource "aws_nat_gateway" "nat_gw" {
+  allocation_id = aws_eip.nat_eip.id
+  subnet_id     = "<your-public-subnet-id>"
+}
 
 
+##
+
+
+resource "aws_route_table" "private_route_table" {
+  vpc_id = "<your-vpc-id>"
+
+  route {
+    cidr_block = "0.0.0.0/0"
+    gateway_id = aws_nat_gateway.nat_gw.id
+  }
+}
+
+resource "aws_route_table_association" "private_assoc_1" {
+  subnet_id      = aws_subnet.private_subnet_1.id
+  route_table_id = aws_route_table.private_route_table.id
+}
+
+resource "aws_route_table_association" "private_assoc_2" {
+  subnet_id      = aws_subnet.private_subnet_2.id
+  route_table_id = aws_route_table.private_route_table.id
+}
+
+
+##
+
+resource "aws_security_group_rule" "allow_outbound_https_ecr" {
+  type              = "egress"
+  from_port         = 443
+  to_port           = 443
+  protocol          = "tcp"
+  security_group_id = aws_security_group.ecs_secgrp.id
+  cidr_blocks       = ["0.0.0.0/0"]  # Allow all outbound HTTPS
+}
+
+##
+
+resource "aws_ecs_service" "app_service" {
+  name            = "app-service"
+  cluster         = aws_ecs_cluster.ecs_cluster.id
+  task_definition = aws_ecs_task_definition.app_task.arn
+  desired_count   = 1
+  launch_type     = "FARGATE"
+
+  network_configuration {
+    subnets          = [aws_subnet.private_subnet_1.id, aws_subnet.private_subnet_2.id]
+    security_groups  = [aws_security_group.ecs_secgrp.id]
+    assign_public_ip = false  # Important for private subnets
+  }
+}
 

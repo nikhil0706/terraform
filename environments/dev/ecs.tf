@@ -136,6 +136,7 @@ resource "aws_ecs_task_definition" "app_task" {
   container_definitions = jsonencode([{
     name      = "my-app"
     image     = "${data.aws_ecr_repository.app_repo.repository_url}:latest"  # ECR image URL
+941377135323.dkr.ecr.us-east-2.amazonaws.com/nikhil2025/deo-app:8c7eb9d634de60d524923138aaa39bfcea4098e2
     essential = true
     portMappings = [
       {
@@ -193,3 +194,11 @@ output "task_definition_arn" {
   description = "The ARN of the ECS Task Definition"
   value       = aws_ecs_task_definition.app_task.arn
 }
+
+output "ecr_image_url" {
+  description = "ECR repository URL for the image"
+  value       = "${data.aws_ecr_repository.app_repo.repository_url}:latest"
+}
+
+
+

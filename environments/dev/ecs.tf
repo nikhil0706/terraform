@@ -119,7 +119,7 @@ resource "aws_vpc_endpoint" "ecr_api" {
   private_dns_enabled = true
 }
 
-resource "aws_vpc_endpoint" "ecr_api" {
+resource "aws_vpc_endpoint" "ecr_dkr" {
   vpc_id            = [aws_vpc.main.id]
   service_name      = "com.amazonaws.${var.aws_region}.ecr.dkr"
   vpc_endpoint_type = "Interface"

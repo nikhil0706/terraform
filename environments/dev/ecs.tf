@@ -37,24 +37,44 @@ resource "aws_subnet" "ecs_subnet_2" {
 
 
 
-resource "aws_route_table" "private_route_table" {
+resource "aws_route_table" "private_route_table_1" {
   vpc_id = aws_vpc.main.id
 
   route {
     cidr_block = "0.0.0.0/0"
-    gateway_id = aws_nat_gateway.nat_gw.id       # Route to NAT gateway
+    gateway_id = aws_nat_gateway.nat_gw_1.id
+  }
+
+  tags = {
+    Name = "private-route-table-1"
+  }
+}
+
+resource "aws_route_table" "private_route_table_2" {
+  vpc_id = aws_vpc.main.id
+
+  route {
+    cidr_block = "0.0.0.0/0"
+    gateway_id = aws_nat_gateway.nat_gw_2.id
+  }
+
+  tags = {
+    Name = "private-route-table-1"
   }
 }
 
 resource "aws_route_table_association" "private_assoc_1" {
-  subnet_id      = aws_subnet.ecs_subnet_1.id
-  route_table_id = aws_route_table.private_route_table.id
+  subnet_id      = aws_subnet.ecs_subnet_1.id  # Private Subnet 1 (AZ-1)
+  route_table_id = aws_route_table.private_route_table_1.id
 }
 
 resource "aws_route_table_association" "private_assoc_2" {
-  subnet_id      = aws_subnet.ecs_subnet_2.id
-  route_table_id = aws_route_table.private_route_table.id
+  subnet_id      = aws_subnet.ecs_subnet_2.id  # Private Subnet 2 (AZ-2)
+  route_table_id = aws_route_table.private_route_table_2.id
 }
+
+
+
 
 ###########private end 
 
@@ -102,24 +122,34 @@ resource "aws_route_table_association" "public_assoc2" {
   route_table_id = aws_route_table.public_route_table.id
 }
 
-resource "aws_eip" "nat_eip" {
+
+resource "aws_eip" "nat_eip_1" {
   vpc = true
 }
 
-resource "aws_nat_gateway" "nat_gw" {
-  allocation_id = aws_eip.nat_eip.id
-  subnet_id     = [aws_subnet.ecs_pubsubnet1.id , aws_subnet.ecs_pubsubnet2.id ]  # Use the public subnet here
+resource "aws_eip" "nat_eip_2" {
+  vpc = true
 }
 
+
+resource "aws_nat_gateway" "nat_gw_1" {
+  allocation_id = aws_eip.nat_eip_1.id
+  subnet_id     = aws_subnet.ecs_pubsubnet1.id  # Public Subnet 1 (AZ-1)
+  tags = {
+    Name = "nat-gateway-1"
+  }
+}
+
+resource "aws_nat_gateway" "nat_gw_2" {
+  allocation_id = aws_eip.nat_eip_2.id
+  subnet_id     = aws_subnet.ecs_pubsubnet2.id  # Public Subnet 2 (AZ-2)
+  tags = {
+    Name = "nat-gateway-2"
+  }
+}
+
+
 #########public end
-
-
-#resource "aws_route_table" "ecs_routetable" {
-#  vpc_id = aws_vpc.main.id
-#  tags = {
-#    Name = "ecs_routetable"
-#  }
-#}
 
 
 

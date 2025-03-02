@@ -198,7 +198,7 @@ resource "aws_vpc_endpoint" "ecr_api" {
   vpc_id            = aws_vpc.main.id
   service_name      = "com.amazonaws.${var.aws_region}.ecr.api"
   vpc_endpoint_type = "Interface"
-  subnet_ids        = [aws_subnet.ecs_subnet_1.id, aws_subnet.ecs_subnet_2.id, aws_subnet.ecs_pubsubnet1.id, aws_subnet.ecs_pubsubnet2.id]  # Replace with your subnets
+  subnet_ids        = [aws_subnet.ecs_subnet_1.id, aws_subnet.ecs_subnet_2.id]  # Replace with your subnets
   security_group_ids = [aws_security_group.ecs_secgrp.id]  # Optional: Security group for the endpoint
 
   private_dns_enabled = true
@@ -208,7 +208,7 @@ resource "aws_vpc_endpoint" "ecr_dkr" {
   vpc_id            = aws_vpc.main.id
   service_name      = "com.amazonaws.${var.aws_region}.ecr.dkr"
   vpc_endpoint_type = "Interface"
-  subnet_ids        = [aws_subnet.ecs_subnet_1.id, aws_subnet.ecs_subnet_2.id, aws_subnet.ecs_pubsubnet1.id, aws_subnet.ecs_pubsubnet2.id]  # Replace with your subnets
+  subnet_ids        = [aws_subnet.ecs_subnet_1.id, aws_subnet.ecs_subnet_2.id]  # Replace with your subnets
   security_group_ids = [aws_security_group.ecs_secgrp.id]  # Optional: Security group for the endpoint
 
   private_dns_enabled = true
@@ -222,7 +222,7 @@ resource "aws_lb" "app_lb" {
   internal           = false
   load_balancer_type = "application"
   security_groups    = [aws_security_group.ecs_secgrp.id]
-  subnets            = [aws_subnet.ecs_pubsubnet1.id, aws_subnet.ecs_pubsubnet2.id]
+  subnets            = [aws_subnet.ecs_pubsubnet1.id]
 }
 
 # Target Group

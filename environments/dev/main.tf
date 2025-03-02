@@ -1,7 +1,8 @@
 provider "aws" {
   version = "~> 2.0"
-  region  = "us-east-2"
+  region  = var.aws_region
 }
+
 
 terraform {
   backend "s3" {

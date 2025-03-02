@@ -181,7 +181,7 @@ resource "aws_lb" "app_lb" {
   internal           = false
   load_balancer_type = "application"
   security_groups    = [aws_security_group.ecs_secgrp.id]
-  subnets            = aws_subnet.ecs_pubsubnet.id
+  subnets            = [aws_subnet.ecs_pubsubnet.id]
 }
 
 # Target Group

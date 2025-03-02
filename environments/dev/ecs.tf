@@ -10,10 +10,10 @@ resource "aws_vpc" "main" {
   }
 }
 
-# Create Public Subnets
+# Create Private Subnets
 resource "aws_subnet" "ecs_subnet_1" {
   vpc_id     = aws_vpc.main.id
-  cidr_block = "10.0.1.0/24"
+  cidr_block = "10.0.3.0/24"
   availability_zone = "us-east-2a"
   map_public_ip_on_launch = false
 
@@ -25,7 +25,7 @@ resource "aws_subnet" "ecs_subnet_1" {
 
 resource "aws_subnet" "ecs_subnet_2" {
   vpc_id     = aws_vpc.main.id
-  cidr_block = "10.0.2.0/24"
+  cidr_block = "10.0.4.0/24"
   availability_zone = "us-east-2b"
   map_public_ip_on_launch = false
 
@@ -38,7 +38,7 @@ resource "aws_subnet" "ecs_subnet_2" {
 
 
 resource "aws_route_table" "private_route_table" {
-  vpc_id = "aws_vpc.main.id"
+  vpc_id = aws_vpc.main.id
 
   route {
     cidr_block = "0.0.0.0/0"
@@ -61,13 +61,19 @@ resource "aws_route_table_association" "private_assoc_2" {
 ###################public start
 
 
-resource "aws_subnet" "ecs_pubsubnet" {
+resource "aws_subnet" "ecs_pubsubnet1" {
   vpc_id                  = aws_vpc.main.id
   cidr_block              = "10.0.1.0/24"         # Example CIDR, adjust as needed
   map_public_ip_on_launch = true                  # Enable public IPs
   availability_zone       = "us-east-2a"          # Replace with your AZ
 }
 
+resource "aws_subnet" "ecs_pubsubnet2" {
+  vpc_id                  = aws_vpc.main.id
+  cidr_block              = "10.0.2.0/24"         # Example CIDR, adjust as needed
+  map_public_ip_on_launch = true                  # Enable public IPs
+  availability_zone       = "us-east-2a"          # Replace with your AZ
+}
 
 
 resource "aws_internet_gateway" "ecs_igw" {
@@ -78,7 +84,7 @@ resource "aws_internet_gateway" "ecs_igw" {
 }
 
 resource "aws_route_table" "public_route_table" {
-  vpc_id = "aws_vpc.main.id"
+  vpc_id = aws_vpc.main.id
 
   route {
     cidr_block = "0.0.0.0/0"
@@ -86,8 +92,13 @@ resource "aws_route_table" "public_route_table" {
   }
 }
 
-resource "aws_route_table_association" "public_assoc" {
-  subnet_id      = aws_subnet.ecs_pubsubnet.id
+resource "aws_route_table_association" "public_assoc1" {
+  subnet_id      = aws_subnet.ecs_pubsubnet1.id
+  route_table_id = aws_route_table.public_route_table.id
+}
+
+resource "aws_route_table_association" "public_assoc2" {
+  subnet_id      = aws_subnet.ecs_pubsubnet2.id
   route_table_id = aws_route_table.public_route_table.id
 }
 
@@ -157,7 +168,7 @@ resource "aws_vpc_endpoint" "ecr_api" {
   vpc_id            = aws_vpc.main.id
   service_name      = "com.amazonaws.${var.aws_region}.ecr.api"
   vpc_endpoint_type = "Interface"
-  subnet_ids        = [aws_subnet.ecs_subnet_1.id, aws_subnet.ecs_subnet_2.id]  # Replace with your subnets
+  subnet_ids        = [aws_subnet.ecs_subnet_1.id, aws_subnet.ecs_subnet_2.id, aws_subnet.ecs_pubsubnet1.id, aws_subnet.ecs_pubsubnet2.id]  # Replace with your subnets
   security_group_ids = [aws_security_group.ecs_secgrp.id]  # Optional: Security group for the endpoint
 
   private_dns_enabled = true
@@ -167,7 +178,7 @@ resource "aws_vpc_endpoint" "ecr_dkr" {
   vpc_id            = aws_vpc.main.id
   service_name      = "com.amazonaws.${var.aws_region}.ecr.dkr"
   vpc_endpoint_type = "Interface"
-  subnet_ids        = [aws_subnet.ecs_subnet_1.id, aws_subnet.ecs_subnet_2.id]  # Replace with your subnets
+  subnet_ids        = [aws_subnet.ecs_subnet_1.id, aws_subnet.ecs_subnet_2.id, aws_subnet.ecs_pubsubnet1.id, aws_subnet.ecs_pubsubnet2.id]  # Replace with your subnets
   security_group_ids = [aws_security_group.ecs_secgrp.id]  # Optional: Security group for the endpoint
 
   private_dns_enabled = true
@@ -181,7 +192,7 @@ resource "aws_lb" "app_lb" {
   internal           = false
   load_balancer_type = "application"
   security_groups    = [aws_security_group.ecs_secgrp.id]
-  subnets            = [aws_subnet.ecs_pubsubnet.id]
+  subnets            = [aws_subnet.ecs_pubsubnet1.id, aws_subnet.ecs_pubsubnet2.id]
 }
 
 # Target Group

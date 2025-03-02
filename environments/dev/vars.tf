@@ -1,8 +1,9 @@
-variable "region" {
+variable "aws_region" {
   description = "The AWS region to deploy resources"
   type        = string
   default     = "us-east-2"
 }
+
 
 #variable "instance_type" {
 #  description = "The EC2 instance type"

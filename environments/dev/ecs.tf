@@ -122,7 +122,7 @@ resource "aws_iam_policy_attachment" "ecs_task_execution_role_policy_attachment"
 resource "aws_ecs_cluster" "ecs_cluster" {
   name = "my-ecs-cluster"
 }
-
+##################
 # ECS Task Definition
 resource "aws_ecs_task_definition" "app_task" {
   family                   = "my-task"
@@ -135,7 +135,7 @@ resource "aws_ecs_task_definition" "app_task" {
 
   container_definitions = jsonencode([{
     name      = "my-app"
-    image     = "nginx:latest" # Replace with your container image
+    image     = "${data.aws_ecr_repository.app_repo.repository_url}:latest"  # ECR image URL
     essential = true
     portMappings = [
       {
@@ -147,6 +147,8 @@ resource "aws_ecs_task_definition" "app_task" {
   }])
 }
 
+
+#################
 # ECS Service
 resource "aws_ecs_service" "app_service" {
   name            = "app-service"

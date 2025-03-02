@@ -92,7 +92,7 @@ resource "aws_subnet" "ecs_pubsubnet2" {
   vpc_id                  = aws_vpc.main.id
   cidr_block              = "10.0.2.0/24"         # Example CIDR, adjust as needed
   map_public_ip_on_launch = true                  # Enable public IPs
-  availability_zone       = "us-east-2a"          # Replace with your AZ
+  availability_zone       = "us-east-2b"          # Replace with your AZ
 }
 
 
@@ -222,7 +222,7 @@ resource "aws_lb" "app_lb" {
   internal           = false
   load_balancer_type = "application"
   security_groups    = [aws_security_group.ecs_secgrp.id]
-  subnets            = [aws_subnet.ecs_pubsubnet1.id]
+  subnets            = [aws_subnet.ecs_pubsubnet1.id, aws_subnet.ecs_pubsubnet1.id]
 }
 
 # Target Group

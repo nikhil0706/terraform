@@ -48,7 +48,7 @@ jobs:
           terraform_version: 1.5.6
 
       - name: Terraform Init
-        run: terraform init -upgrade
+        run: terraform init 
         working-directory: environments/${{github.event.inputs.environment}}
          
       - name: Terraform validate

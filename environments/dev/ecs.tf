@@ -339,21 +339,21 @@ resource "aws_ecs_task_definition" "app_task" {
         protocol      = "tcp"
       },
     ]
-   healthCheck = {
-      command     = ["CMD-SHELL", "curl -f http://localhost:5000/health || exit 1"]
-      interval    = 30
-      timeout     = 5
-      retries     = 3
-      startPeriod = 60
-    }
-  logConfiguration = {
-      logDriver = "awslogs"
-      options = {
-        awslogs-group         = aws_cloudwatch_log_group.ecs_log_group.name
-        awslogs-region        = "us-east-1"  # Replace with your region
-        awslogs-stream-prefix = "demo-app"
-      }
-    }
+   #healthCheck = {
+   #   command     = ["CMD-SHELL", "curl -f http://localhost:5000/health || exit 1"]
+   #   interval    = 30
+   #   timeout     = 5
+   #   retries     = 3
+   #   startPeriod = 60
+   # }
+  #logConfiguration = {
+  #    logDriver = "awslogs"
+  #    options = {
+  #      awslogs-group         = aws_cloudwatch_log_group.ecs_log_group.name
+  #      awslogs-region        = "us-east-2"  # Replace with your region
+  #      awslogs-stream-prefix = "demo-app"
+  #    }
+  #  }
   }])
 }
 

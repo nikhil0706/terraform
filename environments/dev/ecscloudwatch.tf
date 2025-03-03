@@ -46,21 +46,6 @@ resource "aws_cloudwatch_log_metric_filter" "log_pattern_filter" {
   }
 }
 
-
-resource "aws_cloudwatch_metric_alarm" "ecs_error_alarm" {
-  alarm_name          = "ECS-Error-Alarm"
-  comparison_operator = "GreaterThanThreshold"
-  evaluation_periods  = 1
-  threshold           = 10
-  metric_name         = aws_cloudwatch_log_metric_filter.log_pattern_filter.metric_transformation[0].name
-  namespace           = "ECSLogs"
-  period              = 60  # 60 seconds (1 minute)
-  statistic           = "Sum"
-
-  alarm_description = "Triggers if logs exceed 10 times in a minute."
-}
-
-
 resource "aws_sns_topic" "ecs_alarm_topic" {
   name = "ecs-alarm-topic"
 }

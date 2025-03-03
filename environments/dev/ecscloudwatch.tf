@@ -32,42 +32,79 @@ resource "aws_iam_role_policy_attachment" "ecs_logging_policy_attachment" {
 }
 
 
-resource "aws_cloudwatch_log_metric_filter" "log_pattern_filter" {
-  name           = "error-log-filter"
-  log_group_name = aws_cloudwatch_log_group.ecs_log_group.name
+resource "aws_ses_email_identity" "verified_email" {
+  email = "nikhil.devraj77@gmail.com"
+}
 
-  # Define the pattern to match logs (replace "ERROR" with your pattern)
-  pattern = "{ $.message = \"*200*\" }"
+resource "aws_sns_topic" "log_alert_topic" {
+  name = "log-alert-topic"
+}
+
+resource "aws_sns_topic_subscription" "email_subscription" {
+  topic_arn = aws_sns_topic.log_alert_topic.arn
+  protocol  = "email"
+  endpoint  = "nikhil.devraj77@gmail.com"  # Email to receive alerts
+}
+
+resource "aws_cloudwatch_log_metric_filter" "error_filter" {
+  name           = "error-filter"
+  log_group_name = "/aws/lambda/your-log-group"  # Replace with your log group
+  pattern        = "\"ERROR\""  # Log pattern to search for
 
   metric_transformation {
     name      = "ErrorCount"
-    namespace = "ECSLogs"
+    namespace = "LogMetrics"
     value     = "1"
   }
 }
 
-resource "aws_sns_topic" "ecs_alarm_topic" {
-  name = "ecs-alarm-topic"
-}
-
-resource "aws_sns_topic_subscription" "email_subscription" {
-  topic_arn = aws_sns_topic.ecs_alarm_topic.arn
-  protocol  = "email"
-  endpoint  = "nikhil.devraj77@gmail.com"  # Replace with your email
-}
-
-resource "aws_cloudwatch_metric_alarm" "ecs_error_alarm" {
-  alarm_name          = "ECS-Error-Alarm"
-  comparison_operator = "GreaterThanThreshold"
+resource "aws_cloudwatch_metric_alarm" "log_error_alarm" {
+  alarm_name          = "log-error-alarm"
+  comparison_operator = "GreaterThanOrEqualToThreshold"
   evaluation_periods  = 1
-  threshold           = 10
-  metric_name         = aws_cloudwatch_log_metric_filter.log_pattern_filter.metric_transformation[0].name
-  namespace           = "ECSLogs"
-  period              = 60
+  metric_name         = aws_cloudwatch_log_metric_filter.error_filter.metric_transformation[0].name
+  namespace           = "LogMetrics"
+  period              = 30  # 30sec
   statistic           = "Sum"
+  threshold           = 2  # Trigger if log appears 10+ times
 
-  alarm_description = "Triggers if error logs exceed 10 times in a minute."
-  alarm_actions     = [aws_sns_topic.ecs_alarm_topic.arn]  # Send alarm notifications to SNS
+  alarm_actions = [aws_sns_topic.log_alert_topic.arn]
+  role_arn      = aws_iam_role.ses_role.arn
 }
 
+resource "aws_iam_role" "ses_role" {
+  name = "ses-email-sender-role"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Action    = "sts:AssumeRole",
+        Effect    = "Allow",
+        Principal = {
+          Service = "sns.amazonaws.com"
+        }
+      }
+    ]
+  })
+}
+
+
+resource "aws_iam_role_policy" "ses_send_policy" {
+  name = "ses-send-email-policy"
+  role = aws_iam_role.ses_role.id  
+  policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Action = [
+          "ses:SendEmail",
+          "ses:SendRawEmail"
+        ],
+        Effect   = "Allow",
+        Resource = "*"
+      }
+    ]
+  })
+}
 

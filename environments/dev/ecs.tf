@@ -346,14 +346,14 @@ resource "aws_ecs_task_definition" "app_task" {
    #   retries     = 3
    #   startPeriod = 60
    # }
-  logConfiguration = {
-      logDriver = "awslogs"
-      options = {
-        awslogs-group         = aws_cloudwatch_log_group.ecs_log_group.name
-        awslogs-region        = "us-east-2"  # Replace with your region
-        awslogs-stream-prefix = "demo-app"
-      }
-    }
+  #logConfiguration = {
+   #   logDriver = "awslogs"
+    #  options = {
+     #   awslogs-group         = aws_cloudwatch_log_group.ecs_log_group.name
+      #  awslogs-region        = "us-east-2"  # Replace with your region
+       # awslogs-stream-prefix = "demo-app"
+     # }
+    #}
   }])
 }
 

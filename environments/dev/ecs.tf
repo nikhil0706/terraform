@@ -321,7 +321,7 @@ resource "aws_ecs_service" "app_service" {
     container_port   = 5000
   }
 
-  depends_on = [aws_lb_listener.http]
+  depends_on = [aws_lb_listener.front_end]
 }
 
 output "load_balancer_url" {
@@ -359,3 +359,7 @@ output "ecr_image_url" {
   value       = "${data.aws_ecr_repository.app_repo.repository_url}:latest"
 }
 
+output "alb_url" {
+  description = "Application load balancer "
+  value       = aws_lb.app_lb.dns_name
+}

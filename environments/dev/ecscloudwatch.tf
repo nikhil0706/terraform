@@ -53,7 +53,7 @@ resource "aws_cloudwatch_log_metric_filter" "error_filter" {
 
   metric_transformation {
     name      = "ErrorCount"
-    namespace = "AWS/Logs"
+    namespace = "Logs"
     value     = "1"
   }
 }
@@ -63,7 +63,7 @@ resource "aws_cloudwatch_metric_alarm" "log_error_alarm" {
   comparison_operator = "GreaterThanOrEqualToThreshold"
   evaluation_periods  = 1
   metric_name         = aws_cloudwatch_log_metric_filter.error_filter.metric_transformation[0].name
-  namespace           = "AWS/Logs"
+  namespace           = "Logs"
   period              = 30  # 30sec
   statistic           = "Sum"
   threshold           = 2  # Trigger if log appears 2+ times

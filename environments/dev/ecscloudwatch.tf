@@ -40,11 +40,11 @@ resource "aws_sns_topic" "log_alert_topic" {
   name = "log-alert-topic"
 }
 
-resource "aws_sns_topic_subscription" "email_subscription" {
-  topic_arn = aws_sns_topic.log_alert_topic.arn
-  protocol  = "email"
-  endpoint  = "nikhil.devraj77@gmail.com"  # Email to receive alerts
-}
+#resource "aws_sns_topic_subscription" "email_subscription" {
+#  topic_arn = aws_sns_topic.log_alert_topic.arn
+#  protocol  = "email"
+#  endpoint  = "nikhil.devraj77@gmail.com"  # Email to receive alerts
+#}
 
 resource "aws_cloudwatch_log_metric_filter" "error_filter" {
   name           = "error-filter"
@@ -69,7 +69,6 @@ resource "aws_cloudwatch_metric_alarm" "log_error_alarm" {
   threshold           = 2  # Trigger if log appears 10+ times
 
   alarm_actions = [aws_sns_topic.log_alert_topic.arn]
-  role_arn      = aws_iam_role.ses_role.arn
 }
 
 resource "aws_iam_role" "ses_role" {

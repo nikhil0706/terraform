@@ -52,7 +52,7 @@ resource "aws_sns_topic" "ecs_alarm_topic" {
 
 resource "aws_sns_topic_subscription" "email_subscription" {
   topic_arn = aws_sns_topic.ecs_alarm_topic.arn
-  protocol  = "email-json"
+  protocol  = "email"
   endpoint  = "nikhil.devraj77@gmail.com"  # Replace with your email
 }
 

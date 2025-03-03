@@ -367,7 +367,7 @@ resource "aws_ecs_service" "app_service" {
   desired_count   = 1
   launch_type     = "FARGATE"
 
-  force_new_deployment = true
+  #force_new_deployment = true
 
   network_configuration {
     subnets          = [aws_subnet.ecs_subnet_1.id, aws_subnet.ecs_subnet_2.id]
@@ -380,7 +380,7 @@ resource "aws_ecs_service" "app_service" {
     container_port   = 5000
   }
 
-  depends_on = [aws_lb_listener.front_end]
+  #depends_on = [aws_lb_listener.front_end]
 }
 
 output "load_balancer_url" {

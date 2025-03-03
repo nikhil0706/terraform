@@ -61,6 +61,6 @@ jobs:
 
       - name: Terraform Apply
         #if: github.event_name == 'push'
-        run: terraform apply -auto-approve
+        run: terraform destroy -auto-approve
         working-directory: environments/${{github.event.inputs.environment}}
         

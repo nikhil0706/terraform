@@ -1,5 +1,5 @@
-resource "aws_s3_bucket" "s3-dem" {
-  bucket = "my-s3-dem-bucket"
+resource "aws_s3_bucket" "nik-dem-ecs" {
+  bucket = "my-nik-dem-ecs-bucket"
   acl    = "private"
 
   server_side_encryption_configuration {
@@ -11,8 +11,8 @@ resource "aws_s3_bucket" "s3-dem" {
   }
 }
 
-resource "aws_s3_bucket_public_access_block" "s3-dem" {
-  bucket = aws_s3_bucket.s3-dem.id
+resource "aws_s3_bucket_public_access_block" "nik-dem-ecs" {
+  bucket = aws_s3_bucket.nik-dem-ecs.id
 
   block_public_acls       = true
   block_public_policy     = true
@@ -21,15 +21,15 @@ resource "aws_s3_bucket_public_access_block" "s3-dem" {
 }
 
 resource "aws_s3_bucket_object" "test" {
-  bucket = aws_s3_bucket.s3-dem.bucket
+  bucket = aws_s3_bucket.nik-dem-ecs.bucket
   key    = "test"
   content = "This is a test object"
 }
 
 output "bucket_id" {
-  value = aws_s3_bucket.s3-dem.id
+  value = aws_s3_bucket.nik-dem-ecs.id
 }
 
 output "bucket_arn" {
-  value = aws_s3_bucket.s3-dem.arn
+  value = aws_s3_bucket.nik-dem-ecs.arn
 }

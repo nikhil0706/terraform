@@ -48,8 +48,8 @@ resource "aws_sns_topic" "log_alert_topic" {
 
 resource "aws_cloudwatch_log_metric_filter" "error_filter" {
   name           = "error-filter"
-  log_group_name = "/aws/lambda/your-log-group"  # Replace with your log group
-  pattern        = "\"ERROR\""  # Log pattern to search for
+  log_group_name = "/ecs/my-app"  # Replace with your log group
+  pattern        = "\"200\""  # Log pattern to search for
 
   metric_transformation {
     name      = "ErrorCount"
@@ -66,7 +66,7 @@ resource "aws_cloudwatch_metric_alarm" "log_error_alarm" {
   namespace           = "LogMetrics"
   period              = 30  # 30sec
   statistic           = "Sum"
-  threshold           = 2  # Trigger if log appears 10+ times
+  threshold           = 2  # Trigger if log appears 2+ times
 
   alarm_actions = [aws_sns_topic.log_alert_topic.arn]
 }

@@ -374,13 +374,13 @@ resource "aws_ecs_service" "app_service" {
     security_groups  = [aws_security_group.ecs_secgrp.id]
     assign_public_ip = true
   }
-  #load_balancer {
-  #  target_group_arn = aws_lb_target_group.app_tg.arn
-  #  container_name   = "my-app"
-  #  container_port   = 4000
-  #}
+  load_balancer {
+    target_group_arn = aws_lb_target_group.app_tg.arn
+    container_name   = "my-app"
+    container_port   = 4000
+  }
 
-  #depends_on = [aws_lb_listener.front_end]
+  depends_on = [aws_lb_listener.front_end]
 }
 
 output "load_balancer_url" {

@@ -228,7 +228,7 @@ resource "aws_lb" "app_lb" {
 # Target Group
 resource "aws_lb_target_group" "app_tg" {
   name     = "app-tg"
-  port     = 80
+  port     = 5000
   protocol = "HTTP"
   vpc_id   = aws_vpc.main.id
 }
@@ -292,8 +292,8 @@ resource "aws_ecs_task_definition" "app_task" {
     essential = true
     portMappings = [
       {
-        containerPort = 80
-        hostPort      = 80
+        containerPort = 5000
+        hostPort      = 5000
         protocol      = "tcp"
       },
     ]

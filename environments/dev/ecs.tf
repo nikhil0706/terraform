@@ -160,8 +160,8 @@ resource "aws_security_group" "ecs_secgrp" {
   vpc_id = aws_vpc.main.id
 
   ingress {
-    from_port       = 5000
-    to_port         = 5000
+    from_port       = 4000
+    to_port         = 4000
     protocol        = "tcp"
     security_groups = [aws_security_group.alb_sg.id] 
     cidr_blocks = ["0.0.0.0/0"]
@@ -260,7 +260,7 @@ resource "aws_lb" "app_lb" {
 # Target Group
 resource "aws_lb_target_group" "app_tg" {
   name     = "app-tg"
-  port     = 5000
+  port     = 4000
   protocol = "HTTP"
   vpc_id   = aws_vpc.main.id
   target_type = "ip"
@@ -334,8 +334,8 @@ resource "aws_ecs_task_definition" "app_task" {
     essential = true
     portMappings = [
       {
-        containerPort = 5000
-        hostPort      = 5000
+        containerPort = 4000
+        hostPort      = 4000
         protocol      = "tcp"
       },
     ]
@@ -377,7 +377,7 @@ resource "aws_ecs_service" "app_service" {
   load_balancer {
     target_group_arn = aws_lb_target_group.app_tg.arn
     container_name   = "my-app"
-    container_port   = 5000
+    container_port   = 4000
   }
 
   #depends_on = [aws_lb_listener.front_end]

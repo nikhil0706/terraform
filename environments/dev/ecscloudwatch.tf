@@ -56,7 +56,6 @@ resource "aws_cloudwatch_metric_alarm" "log_error_alarm" {
   alarm_name          = "log-error-alarm"
   comparison_operator = "GreaterThanOrEqualToThreshold"
   evaluation_periods  = 1
-  alarm_type          = "MetricAlarm"
   metric_name         = "IncomingLogEvents"
   namespace           = "AWS/Logs"
   period              = 30  # 30sec

@@ -40,20 +40,14 @@ resource "aws_sns_topic" "log_alert_topic" {
   name = "log-alert-topic"
 }
 
-#resource "aws_sns_topic_subscription" "email_subscription" {
-#  topic_arn = aws_sns_topic.log_alert_topic.arn
-#  protocol  = "email"
-#  endpoint  = "nikhil.devraj77@gmail.com"  # Email to receive alerts
-#}
-
 resource "aws_cloudwatch_log_metric_filter" "error_filter" {
   name           = "error-filter"
-  log_group_name = "/ecs/my-app"  # Replace with your log group
-  pattern        = "\"200\""  # Log pattern to search for
+  log_group_name = "/ecs/my-app"  
+  pattern        = "\"200\""  
 
   metric_transformation {
-    name      = "ErrorCount"
-    namespace = "Logs"
+    name      = "IncomingLogEvents"
+    namespace = "AWS/Logs"
     value     = "1"
   }
 }
@@ -62,10 +56,11 @@ resource "aws_cloudwatch_metric_alarm" "log_error_alarm" {
   alarm_name          = "log-error-alarm"
   comparison_operator = "GreaterThanOrEqualToThreshold"
   evaluation_periods  = 1
-  metric_name         = aws_cloudwatch_log_metric_filter.error_filter.metric_transformation[0].name
-  namespace           = "Logs"
+  alarm_type          = "MetricAlarm"
+  metric_name         = IncomingLogEvents
+  namespace           = "AWS/Logs"
   period              = 30  # 30sec
-  statistic           = "Sum"
+  statistic           = "Average"
   threshold           = 2  # Trigger if log appears 2+ times
 
   alarm_actions = [aws_sns_topic.log_alert_topic.arn]

@@ -161,7 +161,7 @@ resource "aws_security_group" "ecs_secgrp" {
 
   ingress {
     from_port   = 80
-    to_port     = 80
+    to_port     = 5000
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
@@ -177,7 +177,7 @@ resource "aws_security_group" "ecs_secgrp" {
 # New Outbound Rule: Ports 1024-65535
 resource "aws_security_group_rule" "allow_outbound_high_ports" {
   type              = "egress"
-  from_port         = 1024
+  from_port         = 80
   to_port           = 65535
   protocol          = "tcp"
   security_group_id = aws_security_group.ecs_secgrp.id
@@ -187,8 +187,8 @@ resource "aws_security_group_rule" "allow_outbound_high_ports" {
 # New Inbound Rule: HTTPS Traffic on Port 443
 resource "aws_security_group_rule" "allow_inbound_https" {
   type              = "ingress"
-  from_port         = 443
-  to_port           = 443
+  from_port         = 80
+  to_port           = 65535 #change later
   protocol          = "tcp"
   security_group_id = aws_security_group.ecs_secgrp.id
   cidr_blocks       = ["0.0.0.0/0"]
@@ -315,6 +315,13 @@ resource "aws_ecs_service" "app_service" {
     security_groups  = [aws_security_group.ecs_secgrp.id]
     assign_public_ip = true
   }
+  load_balancer {
+    target_group_arn = aws_lb_target_group.app_tg.arn
+    container_name   = "my-app"
+    container_port   = 5000
+  }
+
+  depends_on = [aws_lb_listener.http]
 }
 
 output "load_balancer_url" {

@@ -1,5 +1,5 @@
-resource "aws_s3_bucket" "example" {
-  bucket = "my-example-bucket"
+resource "aws_s3_bucket" "s3-dem" {
+  bucket = "my-s3-dem-bucket"
   acl    = "private"
 
   server_side_encryption_configuration {
@@ -11,8 +11,8 @@ resource "aws_s3_bucket" "example" {
   }
 }
 
-resource "aws_s3_bucket_public_access_block" "example" {
-  bucket = aws_s3_bucket.example.id
+resource "aws_s3_bucket_public_access_block" "s3-dem" {
+  bucket = aws_s3_bucket.s3-dem.id
 
   block_public_acls       = true
   block_public_policy     = true
